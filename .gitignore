@@ -1,0 +1,22 @@
+# Ambientes virtuais
+venv/
+env/
+.venv/
+
+# Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Arquivos gerados pelo PyInstaller
+build/
+dist/
+*.spec
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Configurações de editores
+.vscode/
+.idea/
