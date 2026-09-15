@@ -1,0 +1,110 @@
+"""
+Calculadora com interface gráfica (tkinter)
+--------------------------------------------
+Mesma lógica da versão de terminal, agora com botões e tela.
+"""
+
+import tkinter as tk
+
+
+# ---------- Lógica (igual à versão de terminal) ----------
+
+def somar(a, b):
+    return a + b
+
+def subtrair(a, b):
+    return a - b
+
+def multiplicar(a, b):
+    return a * b
+
+def dividir(a, b):
+    if b == 0:
+        raise ValueError("Não é possível dividir por zero!")
+    return a / b
+
+
+# ---------- Interface gráfica ----------
+
+class CalculadoraApp:
+    def __init__(self, janela):
+        self.janela = janela
+        self.janela.title("Calculadora")
+        self.janela.resizable(False, False)
+
+        # Guarda o que está sendo digitado
+        self.expressao = ""
+
+        # Campo de texto (onde aparece o número/resultado)
+        self.visor = tk.Entry(
+            janela, font=("Arial", 24), justify="right",
+            bd=10, insertwidth=2, bg="#f0f0f0"
+        )
+        self.visor.grid(row=0, column=0, columnspan=4, sticky="nsew")
+
+        # Layout dos botões: (texto, linha, coluna)
+        botoes = [
+            ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("/", 1, 3),
+            ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("*", 2, 3),
+            ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("-", 3, 3),
+            ("0", 4, 0), (".", 4, 1), ("=", 4, 2), ("+", 4, 3),
+            ("C", 5, 0),
+        ]
+
+        for (texto, linha, coluna) in botoes:
+            self.criar_botao(texto, linha, coluna)
+
+    def criar_botao(self, texto, linha, coluna):
+        comando = lambda: self.clicar(texto)
+        botao = tk.Button(
+            self.janela, text=texto, font=("Arial", 18),
+            width=5, height=2, command=comando
+        )
+        botao.grid(row=linha, column=coluna, columnspan=4 if texto == "C" else 1)
+
+    def clicar(self, texto):
+        if texto == "C":
+            self.expressao = ""
+            self.atualizar_visor()
+        elif texto == "=":
+            self.calcular()
+        else:
+            self.expressao += texto
+            self.atualizar_visor()
+
+    def calcular(self):
+        try:
+            # Troca os símbolos pela função certa
+            if "+" in self.expressao:
+                a, b = self.expressao.split("+")
+                resultado = somar(float(a), float(b))
+            elif "-" in self.expressao[1:]:  # [1:] evita confundir com número negativo
+                partes = self.expressao.split("-")
+                a, b = partes[0], partes[1]
+                resultado = subtrair(float(a), float(b))
+            elif "*" in self.expressao:
+                a, b = self.expressao.split("*")
+                resultado = multiplicar(float(a), float(b))
+            elif "/" in self.expressao:
+                a, b = self.expressao.split("/")
+                resultado = dividir(float(a), float(b))
+            else:
+                resultado = float(self.expressao)
+
+            self.expressao = str(resultado)
+            self.atualizar_visor()
+
+        except (ValueError, ZeroDivisionError) as erro:
+            self.expressao = ""
+            self.visor.delete(0, tk.END)
+            self.visor.insert(0, "Erro")
+
+    def atualizar_visor(self):
+        self.visor.delete(0, tk.END)
+        self.visor.insert(0, self.expressao)
+
+
+if __name__ == "__main__":
+    janela = tk.Tk()
+    app = CalculadoraApp(janela)
+    janela.mainloop()
